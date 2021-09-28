@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<link href="css/mui.min.css" rel="stylesheet"/>
+		<script src="js/mui.js"></script>
+		<!-- 引入vue -->
+		<script src="./js/vue.min.js"></script>
+		<!-- 引入样式文件 -->
+		<link rel="stylesheet" href="./css/vant.mim.css" rel="external nofollow" target="_blank" >
+		<!-- 引入 Vue 和 Vant 的 JS 文件 -->
+		<script src="./js/vant.min.js" rel="external nofollow" ></script>
+		<!-- 自定义css文件 -->
+		<link rel="stylesheet" type="text/css" href="css/index.css"/>
+		<!-- jquery文件 -->
+		<script type="text/javascript" src="./js/jquery.min.js"></script>
+	</head>
+
+	<body>
+		<div id="music">
+			<div class="head">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<h1 class="mui-title">{{names.substring(0,names.length-4)}}</h1>
+				</header>
+			</div>
+			<div style="height: 93%;" class="contents">
+				<!-- 图片区域 -->
+				<div class="img_photo">
+					<img id="imgshow" src="./img/zxc.jpg" >
+				</div>
+				<!-- 歌词区域 -->
+				<div class="music_words">
+					<div>
+						<van-progress :percentage="count" pivot-text='' stroke-width="15"/>
+					</div>
+					<span>歌曲全名：{{names}}</span><br>
+						<p>
+						<span>
+							{{musicNow}}  /  {{musicLength}}
+						</span> 
+						</p>
+					<span>暂无歌词，持续更新中...</span>
+				</div>
+				<!-- 操作区域 -->
+				<div class="music_manager">
+					<img src="img/up.png" @click="upMusic">
+					<img id="start" src="./img/pause.png" @click="loadMusic">
+					<img src="img/down.png" @click="downMusic">
+				</div>
+				<div style="width: 100%;height: 5%;background-color: #dfdfdf;text-align: center;line-height:2.1875rem;">
+					<span>
+						Copyright©2021 <strong>叫做长大</strong>
+					</span>
+				</div>
+				<audio id="audio" :src="musicname" preload>
+			</div>
+		</div>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function(){
+			    var self = plus.webview.currentWebview();
+			    var name = self.name;//获得参数
+				var app = new Vue({
+				  el: '#music',
+				  data() {
+				  	return{
+						names:'',
+						musicname:'',
+						musicData:[],
+						musicLength:'',
+						musicNow:'00:00',
+						count:''
+					}
+				  },
+				  created() {
+					var that=this
+				  	that.names=name.item
+					that.musicname='http://www.jcsy.work:3333/music/'+(name.item)
+					that.get()
+					// 初始化获取歌曲时长
+					setTimeout(function(){
+						var music = document.getElementById("audio");
+						that.musicLength=that.secondToTimeStr(Math.round(music.duration))
+					},500)
+				  },
+				  methods:{
+					  // 刷新所有的数据
+					  get(){
+						  var that=this
+						  $.get('http://www.jcsy.work:3333/see_music').then(res=>{
+								  if(res.code===200){
+									  that.musicData=res.data
+								  }
+						  }).catch(e=>{
+								  vant.Toast.fail('服务异常，请稍候重试！');
+						  })
+					  },
+					  // 上一首
+					  upMusic(){
+						  var that=this
+						  var music = document.getElementById("audio");
+						  if(name.index<0){
+							  name.index=that.musicData.length+1
+						  }
+						  that.musicNow='00:00'
+						   $('#start').attr('src','./img/pause.png')
+						   name.index--
+						  that.names=that.musicData[name.index]
+						  that.musicname='http://www.jcsy.work:3333/music/'+that.names
+						  // $('#start').attr('src','./img/start.png')
+						  that.musicLength=that.secondToTimeStr(Math.round(music.duration))
+						  that.getMusic()
+						  music.play()
+					  },
+					  // 下一首
+					  downMusic(){
+						  var that=this
+						  var music = document.getElementById("audio");
+						  if(name.index>=that.musicData.length){
+							   name.index=-1
+						  }
+						  that.musicNow='00:00'
+						  $('#start').attr('src','./img/pause.png')
+						  name.index++
+						  that.names=that.musicData[name.index]
+						  that.musicname='http://www.jcsy.work:3333/music/'+that.names
+						  // $('#start').attr('src','./img/start.png')
+						  that.musicLength=that.secondToTimeStr(Math.round(music.duration))
+						  that.getMusic()
+						  music.play()
+					  },
+					  // 开始暂停按钮
+					  loadMusic(){
+						  var that=this
+						  var music = document.getElementById("audio");
+						  if( $('#start').attr('src')==='./img/pause.png'){
+							    $('#start').attr('src','./img/start.png')
+								music.play()//播放音乐
+								that.getMusic()
+						  }else{
+							  $('#start').attr('src','./img/pause.png')
+							  music.pause();//暂停音乐
+						  }
+					  },
+					  getMusic(){
+						  var that=this
+						  var current=0
+						  setInterval(function(){
+							var music = document.getElementById("audio");
+						  	that.count=Math.floor((music.currentTime/music.duration)*100) 
+						  	that.musicNow=that.secondToTimeStr(Math.round(music.currentTime))
+						  	if(that.count===100){
+						  		music.pause()
+						  		alert('歌曲播放结束')
+						  	}
+						  },1000)
+					  },
+					  // 秒数转化
+					   secondToTimeStr(t) {
+					    if (!t) return;
+					    if (t < 60) return "00:" + ((i = t) < 10 ? "0" + i : i);
+					    if (t < 3600) return "" + ((a = parseInt(t / 60)) < 10 ? "0" + a : a) + ":" + ((i = t % 60) < 10 ? "0" + i : i);
+					    if (3600 <= t) {
+					      var a, i, e = parseInt(t / 3600);
+					      return (e < 10 ? "0" + e : e) + ":" + ((a = parseInt(t % 3600 / 60)) < 10 ? "0" + a : a) + ":" + ((i = t % 60) < 10 ? "0" + i : i);
+					    }
+					  }
+				  }
+				})
+			});
+		</script>
+	</body>
+
+</html>
