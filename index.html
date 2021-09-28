@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+	<!-- 引入vue -->
+	<script src="./js/vue.min.js"></script>
+	<!-- 引入样式文件 -->
+	<link rel="stylesheet" href="./css/vant.mim.css" rel="external nofollow" target="_blank" >
+	<!-- 引入 Vue 和 Vant 的 JS 文件 -->
+	<script src="./js/vant.min.js" rel="external nofollow" ></script>
+	<!-- 自定义css文件 -->
+	<link rel="stylesheet" type="text/css" href="css/index.css"/>
+	<!-- jquery文件 -->
+	<script type="text/javascript" src="./js/jquery.min.js"></script>
+  </head>
+<body>
+	<div id="app">
+		<div class="head">
+			<header class="mui-bar mui-bar-nav">
+				<h1 class="mui-title">音乐播放器</h1>
+			</header>
+		</div>
+		<div>
+			<van-notice-bar text="所有歌曲来自网易云，若有侵权联系邮箱（1848514604@qq.com）" left-icon="volume-o" />
+		</div>
+		<div class="contents">
+			<span style="display: inline-block;width: 100%;height: 5%;line-height:1.875rem;text-align: center;">当前存在：<strong>{{musicData.length}}</strong>首歌曲(歌曲每天会进行实时更新)</span>
+			<div class="contents_bottom">
+				<ul>
+					<li @click="seeMsg(index,item)" v-for="(item,index) in musicData" :key="index"><span style="padding-left: 0.625rem;font-size: 0.875rem;">{{index+1}}</span> 
+						<span class="mui-icon mui-icon-arrowthinright"></span>
+						<a href="javascript:;" :title="item" style="color: #000000;font-size: 1.125rem;">
+							<span style="margin-left: 3.125rem; ">{{item.substring(0,item.length-4)}}</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" charset="utf-8">
+	  	mui.init();
+		var app = new Vue({
+		  el: '#app',
+		  data: {
+			  // 存储所有音乐
+			  musicData:[]
+		  },
+		  created() {
+		  	this.get()
+		  },
+		  methods:{
+			  get(){
+				  var that=this
+				  $.get('http://www.jcsy.work:3333/see_music').then(res=>{
+					  if(res.code===200){
+						  vant.Toast('初始化数据获取成功！');
+						  that.musicData=res.data
+					  }
+				  }).catch(e=>{
+					  vant.Toast.fail('服务异常，请稍候重试！');
+				  })
+			  },
+			  // 点击跳转传参事件
+			  seeMsg(index,item){
+				  console.log(item)
+				  mui.openWindow({
+					  url:'music.html',
+					  extras: {    //extras里面的就是参数了
+					          name:{
+								  item:item,
+								  index:index
+							  }
+					    },
+				  })
+			  }
+		  }
+		})
+		
+	</script>
+</body>
+</html>
