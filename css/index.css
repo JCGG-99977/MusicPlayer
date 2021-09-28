@@ -1,0 +1,106 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+body,html{
+	width: 100%;
+	height: 100%;
+}
+#app{
+	width: 100%;
+	height: 100%;
+	/* background-color: pink; */
+}
+#music{
+	width: 100%;
+	height: 100%;
+	/* background-color: skyblue; */
+}
+.head{
+	width: 100%;
+	height: 7%;
+	/* background-color: skyblue; */
+}
+.contents{
+	width: 100%;
+	height: 87%;
+	/* background-color: #07C160; */
+}
+.contents_bottom{
+	width: 100%;
+	height:95%;
+	/* background-color: #007AFF; */
+	overflow: auto;
+}
+.contents_bottom ul li{
+	width: 100%;
+	height: 3.75rem;
+	background-color: #dfdfdf;
+	margin-top: 0.625rem;
+	margin-right: 0.625rem;
+	line-height: 3.75rem;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+/* 图片 */
+.img_photo{
+	width: 70%;
+	height: 40%;
+	/* background-color: #07C160; */
+	margin: 0 auto;
+	text-align: center;
+	/* border-radius: 50%; */
+	/* animation: music 15s linear infinite; */
+}
+.img_photo img{
+	width: 90%;
+	height: 90%;
+	margin-top: 0.625rem;
+	border-radius: 50%;
+}
+/* 歌词 */
+.music_words{
+	width: 100%;
+	height: 35%;
+	/* background-color: skyblue; */
+	line-height: 3.125rem;
+	margin-top: 0.3125rem;
+	text-align: center;
+}
+/* 操作 */
+.music_manager{
+	width: 100%;
+	height: 17%;
+	/* background-color: orangered; */
+	margin-top: 0.625rem;
+	display: flex;
+}
+.music_manager img{
+	width: 1;
+	height: 5rem;
+	margin-top: 1.25rem;
+	margin-left:1.875rem;
+	margin-right: 1.25rem;
+}
+#imgshow{
+	/* transform: rotate(90deg); */
+	animation: music 15s linear infinite;
+}
+@keyframes music{
+	0%{
+		transform: rotate(0deg);
+	}
+	25%{
+		transform: rotate(90deg);
+	}
+	50%{
+		transform: rotate(180deg);
+	}
+	75%{
+		transform: rotate(270deg);
+	}
+	100%{
+		transform: rotate(360deg);
+	}
+}
